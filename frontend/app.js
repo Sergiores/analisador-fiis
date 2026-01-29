@@ -67,11 +67,29 @@ async function handleFile(file) {
             body: formData
         });
 
-        const data = await response.json();
+        // Tenta fazer parse do JSON
+        let data = null;
+        try {
+            data = await response.json();
+        } catch (parseError) {
+            throw new Error('Resposta inválida do servidor. Verifique se o backend está funcionando.');
+        }
 
-        // Verifica se houve erro
-        if (!response.ok || data.erro) {
-            exibirErro(data);
+        // Verifica se houve erro HTTP ou erro na resposta
+        if (!response.ok || (data && data.erro)) {
+            exibirErro(data || {
+                erro: 'erro_http',
+                mensagem: `Erro HTTP ${response.status}: ${response.statusText}`
+            });
+            return;
+        }
+
+        // Verifica se a resposta tem a estrutura esperada
+        if (!data || !data.ticker || !data.criterios) {
+            exibirErro({
+                erro: 'resposta_invalida',
+                mensagem: 'A resposta do servidor não contém os dados esperados.'
+            });
             return;
         }
 
@@ -79,9 +97,10 @@ async function handleFile(file) {
         exibirResultado(data);
 
     } catch (error) {
+        console.error('Erro completo:', error);
         exibirErro({
             erro: 'erro_conexao',
-            mensagem: `Erro de conexão: ${error.message}`
+            mensagem: `Erro de conexão com o servidor: ${error.message}. Verifique se o backend está online.`
         });
     }
 }
@@ -93,19 +112,19 @@ function exibirErro(erro) {
         mensagemDetalhada = `
             <h3>⚠️ Documento Incorreto</h3>
             <p>${erro.mensagem}</p>
-            <div style="background: #1f2937; padding: 15px; border-radius: 8px; margin-top: 20px;">
+            <div style="background: #1f2937; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: left;">
                 <p><strong>O que é um Fato Relevante?</strong></p>
                 <p>É um documento que informa eventos importantes do fundo (como emissões de cotas), mas não contém as métricas necessárias para análise.</p>
                 <br>
                 <p><strong>Onde encontrar o documento correto?</strong></p>
-                <ul style="text-align: left; margin-left: 20px;">
+                <ul style="margin-left: 20px;">
                     <li>Site da gestora do fundo</li>
                     <li>Seção "Relações com Investidores" na B3</li>
                     <li>Plataformas como Funds Explorer ou Status Invest</li>
                 </ul>
                 <br>
                 <p><strong>Procure por:</strong></p>
-                <ul style="text-align: left; margin-left: 20px;">
+                <ul style="margin-left: 20px;">
                     <li>Relatório Gerencial</li>
                     <li>Informe Mensal</li>
                     <li>Relatório de Investimento</li>
@@ -116,9 +135,9 @@ function exibirErro(erro) {
         mensagemDetalhada = `
             <h3>⚠️ Métricas Insuficientes</h3>
             <p>${erro.mensagem}</p>
-            <div style="background: #1f2937; padding: 15px; border-radius: 8px; margin-top: 20px;">
+            <div style="background: #1f2937; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: left;">
                 <p><strong>O sistema precisa encontrar no PDF:</strong></p>
-                <ul style="text-align: left; margin-left: 20px;">
+                <ul style="margin-left: 20px;">
                     <li>P/VP (Preço sobre Valor Patrimonial)</li>
                     <li>Dividend Yield (12 meses)</li>
                     <li>Vacância (física ou financeira)</li>
@@ -128,10 +147,29 @@ function exibirErro(erro) {
                 <p>Certifique-se de que o PDF contém essas informações.</p>
             </div>
         `;
+    } else if (erro.erro === 'erro_conexao') {
+        mensagemDetalhada = `
+            <h3>❌ Erro de Conexão</h3>
+            <p>${erro.mensagem}</p>
+            <div style="background: #1f2937; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: left;">
+                <p><strong>Possíveis causas:</strong></p>
+                <ul style="margin-left: 20px;">
+                    <li>O backend pode estar offline ou reiniciando</li>
+                    <li>Verifique se a URL do backend está correta</li>
+                    <li>Problemas de conexão com a internet</li>
+                </ul>
+                <br>
+                <p><strong>URL do Backend:</strong> ${API_URL}</p>
+            </div>
+        `;
     } else {
         mensagemDetalhada = `
             <h3>❌ Erro</h3>
             <p>${erro.mensagem || 'Erro desconhecido ao processar o arquivo.'}</p>
+            <div style="background: #1f2937; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: left;">
+                <p><strong>Detalhes técnicos:</strong></p>
+                <pre style="background: #111827; padding: 10px; border-radius: 4px; overflow-x: auto;">${JSON.stringify(erro, null, 2)}</pre>
+            </div>
         `;
     }
 

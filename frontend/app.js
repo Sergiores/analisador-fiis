@@ -113,22 +113,29 @@ function exibirErro(erro) {
             <h3>⚠️ Documento Incorreto</h3>
             <p>${erro.mensagem}</p>
             <div style="background: #1f2937; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: left;">
-                <p><strong>O que é um Fato Relevante?</strong></p>
-                <p>É um documento que informa eventos importantes do fundo (como emissões de cotas), mas não contém as métricas necessárias para análise.</p>
+                <p><strong>📌 Este sistema analisa QUALQUER FII brasileiro!</strong></p>
+                <p>Mas precisa do documento correto. Fatos Relevantes não contêm as métricas necessárias.</p>
                 <br>
-                <p><strong>Onde encontrar o documento correto?</strong></p>
-                <ul style="margin-left: 20px;">
-                    <li>Site da gestora do fundo</li>
-                    <li>Seção "Relações com Investidores" na B3</li>
-                    <li>Plataformas como Funds Explorer ou Status Invest</li>
-                </ul>
-                <br>
-                <p><strong>Procure por:</strong></p>
+                <p><strong>✅ Documentos aceitos:</strong></p>
                 <ul style="margin-left: 20px;">
                     <li>Relatório Gerencial</li>
                     <li>Informe Mensal</li>
-                    <li>Relatório de Investimento</li>
+                    <li>Relatório do Administrador</li>
+                    <li>Lâmina do Fundo</li>
                 </ul>
+                <br>
+                <p><strong>🔍 Onde encontrar (para QUALQUER FII):</strong></p>
+                <ul style="margin-left: 20px;">
+                    <li>Site da gestora do fundo</li>
+                    <li><a href="https://www.fundsexplorer.com.br" target="_blank" style="color: #60a5fa;">Funds Explorer</a></li>
+                    <li><a href="https://statusinvest.com.br/fundos-imobiliarios" target="_blank" style="color: #60a5fa;">Status Invest</a></li>
+                    <li>Seção "Relações com Investidores" na B3</li>
+                </ul>
+                <br>
+                <p><strong>💡 Exemplos de FIIs que você pode analisar:</strong></p>
+                <p style="font-family: monospace; background: #111827; padding: 10px; border-radius: 4px;">
+                    VGHF11, RZTR11, GARE11, HGLG11, MXRF11, KNRI11, XPML11, BTLG11, VISC11, KNCR11, etc.
+                </p>
             </div>
         `;
     } else if (erro.erro === 'metricas_insuficientes') {
@@ -136,15 +143,20 @@ function exibirErro(erro) {
             <h3>⚠️ Métricas Insuficientes</h3>
             <p>${erro.mensagem}</p>
             <div style="background: #1f2937; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: left;">
-                <p><strong>O sistema precisa encontrar no PDF:</strong></p>
+                <p><strong>📊 O Método SRS FI precisa de 4 métricas:</strong></p>
                 <ul style="margin-left: 20px;">
-                    <li>P/VP (Preço sobre Valor Patrimonial)</li>
-                    <li>Dividend Yield (12 meses)</li>
-                    <li>Vacância (física ou financeira)</li>
-                    <li>Liquidez Diária</li>
+                    <li><strong>P/VP</strong> (Preço sobre Valor Patrimonial) → Faixa: 0,65 a 1,02</li>
+                    <li><strong>Dividend Yield</strong> (12 meses) → Mínimo: 10,2% a.a.</li>
+                    <li><strong>Vacância/Inadimplência</strong> → Máximo: 4%</li>
+                    <li><strong>Liquidez Diária</strong> → Mínimo: R$ 2,5 milhões</li>
                 </ul>
                 <br>
-                <p>Certifique-se de que o PDF contém essas informações.</p>
+                <p><strong>💡 Dica:</strong> Alguns RIs não trazem todas as métricas. Nesse caso, você pode:</p>
+                <ul style="margin-left: 20px;">
+                    <li>Buscar o Informe Mensal mais recente</li>
+                    <li>Consultar plataformas como Funds Explorer ou Status Invest</li>
+                    <li>Combinar informações de múltiplos documentos</li>
+                </ul>
             </div>
         `;
     } else if (erro.erro === 'erro_conexao') {
@@ -159,7 +171,7 @@ function exibirErro(erro) {
                     <li>Problemas de conexão com a internet</li>
                 </ul>
                 <br>
-                <p><strong>URL do Backend:</strong> ${API_URL}</p>
+                <p><strong>URL do Backend:</strong> <code style="background: #111827; padding: 4px 8px; border-radius: 4px;">${API_URL}</code></p>
             </div>
         `;
     } else {
@@ -168,7 +180,7 @@ function exibirErro(erro) {
             <p>${erro.mensagem || 'Erro desconhecido ao processar o arquivo.'}</p>
             <div style="background: #1f2937; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: left;">
                 <p><strong>Detalhes técnicos:</strong></p>
-                <pre style="background: #111827; padding: 10px; border-radius: 4px; overflow-x: auto;">${JSON.stringify(erro, null, 2)}</pre>
+                <pre style="background: #111827; padding: 10px; border-radius: 4px; overflow-x: auto; font-size: 0.85rem;">${JSON.stringify(erro, null, 2)}</pre>
             </div>
         `;
     }
@@ -188,7 +200,7 @@ function exibirErro(erro) {
             display: block;
             margin: 20px auto 0;
         ">
-            🔄 Tentar Novamente
+            🔄 Analisar Outro FII
         </button>
     `;
 }

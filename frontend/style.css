@@ -1,0 +1,40 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #111827;
+  margin: 0;
+  padding: 0;
+  color: #f9fafb;
+}
+
+.container {
+  max-width: 800px;
+  margin: 40px auto;
+  background: #1f2933;
+  border-radius: 12px;
+  padding: 24px 32px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.upload-area {
+  border: 2px dashed #4f46e5;
+  border-radius: 10px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  background: #111827;
+}
+
+.upload-area:hover {
+  background: #020617;
+}
+
+.resultado {
+  margin-top: 24px;
+  background: #020617;
+  padding: 16px;
+  border-radius: 8px;
+}

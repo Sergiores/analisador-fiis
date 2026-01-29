@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Analisador de FIIs - Método SRS FI</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📊 Analisador de FIIs</h1>
+      <p>Upload de RI e análise automática (protótipo)</p>
+    </header>
+
+    <main>
+      <div class="upload-area" id="uploadArea">
+        <input type="file" id="fileInput" accept=".pdf" hidden>
+        <div class="upload-content">
+          <h3>Clique aqui ou arraste um PDF de RI</h3>
+          <p>Protótipo: por enquanto só simula uma análise</p>
+        </div>
+      </div>
+
+      <div id="resultado" class="resultado" style="display:none;">
+        <h2>Resultado da Análise (simulado)</h2>
+        <div id="conteudoResultado"></div>
+      </div>
+    </main>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>

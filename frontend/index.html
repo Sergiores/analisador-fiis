@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Analisador de FIIs - Método SRS FI</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -9,24 +10,30 @@
   <div class="container">
     <header>
       <h1>📊 Analisador de FIIs</h1>
-      <p>Upload de RI e análise automática (protótipo)</p>
+      <p>Método SRS FI - Análise Automática de Relatórios de Investimento</p>
     </header>
 
     <main>
       <div class="upload-area" id="uploadArea">
         <input type="file" id="fileInput" accept=".pdf" hidden>
         <div class="upload-content">
-          <h3>Clique aqui ou arraste um PDF de RI</h3>
-          <p>Protótipo: por enquanto só simula uma análise</p>
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          <h3>Arraste o RI aqui ou clique para selecionar</h3>
+          <p>Formatos aceitos: PDF</p>
         </div>
       </div>
 
-      <div id="resultado" class="resultado" style="display:none;">
-        <h2>Resultado da Análise (simulado)</h2>
+      <div id="resultado" class="resultado" style="display: none;">
+        <h2>Resultado da Análise</h2>
         <div id="conteudoResultado"></div>
       </div>
     </main>
   </div>
+
   <script src="app.js"></script>
 </body>
 </html>

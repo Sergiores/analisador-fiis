@@ -41,7 +41,20 @@ async function handleFile(file) {
     }
 
     // Mostra loading
-    conteudoResultado.innerHTML = '<p>⏳ Analisando relatório...</p>';
+    conteudoResultado.innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+            <div class="spinner" style="
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid #4f46e5;
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 20px;
+            "></div>
+            <p>⏳ Analisando relatório...</p>
+        </div>
+    `;
     resultado.style.display = 'block';
 
     // Envia para API
@@ -54,20 +67,95 @@ async function handleFile(file) {
             body: formData
         });
 
-        if (!response.ok) {
-            throw new Error('Erro ao analisar arquivo');
+        const data = await response.json();
+
+        // Verifica se houve erro
+        if (!response.ok || data.erro) {
+            exibirErro(data);
+            return;
         }
 
-        analiseAtual = await response.json();
-        exibirResultado(analiseAtual);
+        analiseAtual = data;
+        exibirResultado(data);
 
     } catch (error) {
-        conteudoResultado.innerHTML = `<p style="color: red;">❌ Erro: ${error.message}</p>`;
+        exibirErro({
+            erro: 'erro_conexao',
+            mensagem: `Erro de conexão: ${error.message}`
+        });
     }
 }
 
+function exibirErro(erro) {
+    let mensagemDetalhada = '';
+
+    if (erro.erro === 'fato_relevante') {
+        mensagemDetalhada = `
+            <h3>⚠️ Documento Incorreto</h3>
+            <p>${erro.mensagem}</p>
+            <div style="background: #1f2937; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                <p><strong>O que é um Fato Relevante?</strong></p>
+                <p>É um documento que informa eventos importantes do fundo (como emissões de cotas), mas não contém as métricas necessárias para análise.</p>
+                <br>
+                <p><strong>Onde encontrar o documento correto?</strong></p>
+                <ul style="text-align: left; margin-left: 20px;">
+                    <li>Site da gestora do fundo</li>
+                    <li>Seção "Relações com Investidores" na B3</li>
+                    <li>Plataformas como Funds Explorer ou Status Invest</li>
+                </ul>
+                <br>
+                <p><strong>Procure por:</strong></p>
+                <ul style="text-align: left; margin-left: 20px;">
+                    <li>Relatório Gerencial</li>
+                    <li>Informe Mensal</li>
+                    <li>Relatório de Investimento</li>
+                </ul>
+            </div>
+        `;
+    } else if (erro.erro === 'metricas_insuficientes') {
+        mensagemDetalhada = `
+            <h3>⚠️ Métricas Insuficientes</h3>
+            <p>${erro.mensagem}</p>
+            <div style="background: #1f2937; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                <p><strong>O sistema precisa encontrar no PDF:</strong></p>
+                <ul style="text-align: left; margin-left: 20px;">
+                    <li>P/VP (Preço sobre Valor Patrimonial)</li>
+                    <li>Dividend Yield (12 meses)</li>
+                    <li>Vacância (física ou financeira)</li>
+                    <li>Liquidez Diária</li>
+                </ul>
+                <br>
+                <p>Certifique-se de que o PDF contém essas informações.</p>
+            </div>
+        `;
+    } else {
+        mensagemDetalhada = `
+            <h3>❌ Erro</h3>
+            <p>${erro.mensagem || 'Erro desconhecido ao processar o arquivo.'}</p>
+        `;
+    }
+
+    conteudoResultado.innerHTML = `
+        <div style="background: #ef4444; padding: 20px; border-radius: 8px; text-align: center;">
+            ${mensagemDetalhada}
+        </div>
+        <button onclick="location.reload()" style="
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: block;
+            margin: 20px auto 0;
+        ">
+            🔄 Tentar Novamente
+        </button>
+    `;
+}
+
 function exibirResultado(analise) {
-    const statusClass = analise.aprovado ? 'aprovado' : 'reprovado';
     const statusColor = analise.aprovado ? '#10b981' : '#ef4444';
 
     let html = `
@@ -155,3 +243,13 @@ async function baixarPDF() {
         alert('Erro ao baixar PDF: ' + error.message);
     }
 }
+
+// Adiciona animação do spinner
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+`;
+document.head.appendChild(style);

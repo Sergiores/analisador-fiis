@@ -21,11 +21,25 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    return {"mensagem": "API Analisador de FIIs - Método SRS FI funcionando!"}
+    return {
+        "mensagem": "API Analisador de FIIs - Método SRS FI funcionando!",
+        "versao": "1.0.0",
+        "status": "online"
+    }
 
 @app.post("/analisar")
 async def analisar_ri(file: UploadFile = File(...)):
     """Analisa um Relatório de Investimento em PDF."""
+
+    # Valida o tipo de arquivo
+    if not file.filename.lower().endswith('.pdf'):
+        return JSONResponse(
+            status_code=400,
+            content={
+                "erro": "tipo_arquivo_invalido",
+                "mensagem": "Por favor, envie um arquivo PDF."
+            }
+        )
 
     # Salva o arquivo temporariamente
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
@@ -38,6 +52,13 @@ async def analisar_ri(file: UploadFile = File(...)):
         extrator = ExtratorRI()
         metricas = extrator.extrair_metricas(caminho_pdf)
 
+        # Verifica se houve erro na extração
+        if "erro" in metricas:
+            return JSONResponse(
+                status_code=400,
+                content=metricas
+            )
+
         # Aplica Método SRS FI
         analisador = AnalisadorSRS()
         analise = analisador.analisar(metricas)
@@ -47,7 +68,10 @@ async def analisar_ri(file: UploadFile = File(...)):
     except Exception as e:
         return JSONResponse(
             status_code=500,
-            content={"erro": str(e)}
+            content={
+                "erro": "erro_processamento",
+                "mensagem": f"Erro ao processar o arquivo: {str(e)}"
+            }
         )
 
     finally:
@@ -77,5 +101,8 @@ async def gerar_pdf(analise: dict):
     except Exception as e:
         return JSONResponse(
             status_code=500,
-            content={"erro": str(e)}
+            content={
+                "erro": "erro_geracao_pdf",
+                "mensagem": f"Erro ao gerar PDF: {str(e)}"
+            }
         )

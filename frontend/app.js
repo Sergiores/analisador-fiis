@@ -1,5 +1,5 @@
 // Coloque aqui a URL que o Railway gerou
-const API_URL = 'https://satisfied-vision-production-02aa.up.railway.app';
+const API_URL = 'analisador-fiis-production.up.railway.app';
 
 const uploadArea = document.getElementById('uploadArea');
 const fileInput = document.getElementById('fileInput');

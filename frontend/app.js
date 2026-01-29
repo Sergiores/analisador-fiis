@@ -1,5 +1,5 @@
 // Coloque aqui a URL que o Railway gerou
-const API_URL = 'https://analisador-fiis-production.up.railway.app';
+const API_URL = 'https://analisador-fiis.onrender.com';
 const uploadArea = document.getElementById('uploadArea');
 const fileInput = document.getElementById('fileInput');
 const resultado = document.getElementById('resultado');

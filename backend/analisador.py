@@ -53,4 +53,47 @@ class AnalisadorSRS:
             metricas_faltantes.append("Vacância Física")
 
         # Liquidez
+        if metricas.get("liquidez_diaria"):
+            liquidez_mm = metricas["liquidez_diaria"] / 1_000_000
+            criterio = {
+                "nome": "Liquidez Diária (R$ MM)",
+                "valor": round(liquidez_mm, 2),
+                "min_valor": 2.5,
+                "max_valor": 999999,
+                "aprovado": liquidez_mm >= 2.5
+            }
+            criterios.append(criterio)
+            aprovado_geral = aprovado_geral and criterio["aprovado"]
+        else:
+            metricas_faltantes.append("Liquidez Diária")
 
+        # Determina recomendação
+        criterios_aprovados = len([c for c in criterios if c["aprovado"]])
+
+        if aprovado_geral and len(criterios) == 4:
+            recomendacao = "COMPRA"
+            nota = 9.0
+        elif criterios_aprovados >= 3:
+            recomendacao = "COMPRA COM RESSALVAS"
+            nota = 7.5
+        elif criterios_aprovados >= 2:
+            recomendacao = "ANÁLISE ADICIONAL NECESSÁRIA"
+            nota = 6.0
+        else:
+            recomendacao = "NÃO RECOMENDADO"
+            nota = 5.0
+
+        resultado = {
+            "ticker": metricas.get("ticker", "Desconhecido"),
+            "aprovado": aprovado_geral,
+            "recomendacao": recomendacao,
+            "nota": nota,
+            "criterios": criterios,
+            "metricas": metricas
+        }
+
+        # Adiciona informação sobre métricas faltantes
+        if metricas_faltantes:
+            resultado["metricas_faltantes"] = metricas_faltantes
+
+        return resultado
